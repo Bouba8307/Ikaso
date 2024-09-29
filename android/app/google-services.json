@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "187190032090",
+    "project_id": "ikaso-mali",
+    "storage_bucket": "ikaso-mali.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187190032090:android:f65a2e08a422fb3d7057e3",
+        "android_client_info": {
+          "package_name": "com.example.ikaso"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw3wprEG-b3nYIIJoHZupLAaYnnCjYyDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
