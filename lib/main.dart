@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       color: Colors.black54,
       routes: {
-        '/loading': (context) => const LoginScreen(),
+        '/loading': (context) =>  LoginScreen(),
       },
     );
   }

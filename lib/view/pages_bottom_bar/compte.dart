@@ -37,7 +37,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        AppConstants.currentUser.getNomcompletOfUser(),
+                        AppConstants.currentUser.getNomCompletOfUser(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,

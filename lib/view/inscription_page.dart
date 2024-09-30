@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ikaso/view_models/user_view_model.dart';
@@ -70,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20.0),
           children: [
-            Image.asset("assets/images/logo.png", width: 240),
+            SvgPicture.asset("assets/icons/logop.svg"),
             const Text(
               "À propos de toi",
               style: TextStyle(

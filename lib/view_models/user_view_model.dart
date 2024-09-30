@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ikaso/models/app_constants.dart';
 import 'package:ikaso/models/users_models.dart';
+import 'package:ikaso/view/pages_bottom_bar/compte.dart';
 
 class UserViewModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,7 +34,8 @@ class UserViewModel {
 
       String currentUserID = result.user!.uid;
 
-      String imageUrl = await addImageToFirebaseStorage(imageFileOfUser, currentUserID);
+      String imageUrl =
+          await addImageToFirebaseStorage(imageFileOfUser, currentUserID);
 
       UsersModel newUser = UsersModel(
         id: currentUserID,
@@ -51,7 +54,7 @@ class UserViewModel {
 
       // Update AppConstants
       AppConstants.currentUser = newUser;
-
+      Get.to(AccountScreen());
       Get.snackbar("Information", "Votre compte a été créé");
     } catch (e) {
       Get.snackbar("Erreur", e.toString());
@@ -77,11 +80,10 @@ class UserViewModel {
     await _firestore.collection("users").doc(user.id).set(dataMap);
   }
 
-  Future<String> addImageToFirebaseStorage(File imageFileOfUser, String currentUserID) async {
-    Reference referenceStorage = _storage
-        .ref()
-        .child("userImages")
-        .child("$currentUserID.png");
+  Future<String> addImageToFirebaseStorage(
+      File imageFileOfUser, String currentUserID) async {
+    Reference referenceStorage =
+        _storage.ref().child("userImages").child("$currentUserID.png");
 
     UploadTask uploadTask = referenceStorage.putFile(imageFileOfUser);
     TaskSnapshot taskSnapshot = await uploadTask;
@@ -90,45 +92,71 @@ class UserViewModel {
     return downloadUrl;
   }
 
-  Future<void> login(String email, String password) async {
+  login(BuildContext context, String email, String password) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      print("Début de la tentative de connexion");
+      Get.snackbar("Patienter", "Vérification de vos informations en cours");
+
+      UserCredential result =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      print("Connexion réussie pour l'utilisateur : ${result.user?.uid}");
+
       String currentUserID = result.user!.uid;
+      AppConstants.currentUser.id = currentUserID;
 
-      // Fetch user data from Firestore
-      DocumentSnapshot userDoc = await _firestore
-          .collection("users")
-          .doc(currentUserID)
-          .get();
+      print("Récupération des informations utilisateur depuis Firestore");
+      await getUserInfoFromFirestore(currentUserID);
 
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      print("Récupération de l'image depuis le stockage");
+      await getImageFromStorage(currentUserID);
 
-        AppConstants.currentUser = UsersModel(
-          id: currentUserID,
-          email: email,
-          password: password,
-          nom: userData['nom'],
-          prenom: userData['prenom'],
-          city: userData['ville'],
-          country: userData['pays'],
-          bio: userData['bio'],
-          isHost: userData['isHost'],
-          myPostingIDs: List<String>.from(userData['myPostingIDs'] ?? []),
-          savedPostingIDs: List<String>.from(userData['savedPostingIDs'] ?? []),
-          earnings: (userData['earnings'] ?? 0).toDouble(),
-          phoneNumber: userData['phoneNumber'],
-          profileImageUrl: userData['profileImageUrl'],
-        );
-      } else {
-        throw Exception("User data not found");
-      }
+      print("Connexion terminée avec succès");
+      Get.snackbar("Connecté", "Connecté avec succès");
+
+      // Utilisez Get.off() au lieu de Navigator.push pour remplacer l'écran actuel
+      // Get.off(() => AccountScreen());
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AccountScreen()),
+      );
     } catch (e) {
+      print("Erreur lors de la connexion : $e");
       Get.snackbar("Erreur", e.toString());
-      rethrow;
     }
+  }
+
+  getUserInfoFromFirestore(userID) async {
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection("users").doc(userID).get();
+
+    // Au lieu d'assigner directement le snapshot, extrayez les données
+    Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+
+    AppConstants.currentUser.nom = userData["nom"] ?? "";
+    AppConstants.currentUser.prenom = userData["prenom"] ?? "";
+    AppConstants.currentUser.email = userData["email"] ?? "";
+    AppConstants.currentUser.city = userData["ville"] ?? "";
+    AppConstants.currentUser.country = userData["pays"] ?? "";
+    AppConstants.currentUser.phoneNumber = userData["phoneNumber"] ?? "";
+    AppConstants.currentUser.bio = userData["bio"] ?? "";
+    AppConstants.currentUser.isHost = userData["isHost"] ?? false;
+  }
+
+  getImageFromStorage(userID) async {
+    if (AppConstants.currentUser.displayImage != null) {
+      return AppConstants.currentUser.displayImage;
+    }
+    final ImageDataBytes = await FirebaseStorage.instance
+        .ref()
+        .child("userImages")
+        .child("userID")
+        .child(userID + ".png")
+        .getData(1024 * 1024);
+    AppConstants.currentUser.displayImage = MemoryImage(ImageDataBytes!);
+    return AppConstants.currentUser.displayImage;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class UsersModel {
@@ -16,6 +17,8 @@ class UsersModel {
   String phoneNumber;
   String profileImageUrl;
   ImageProvider? displayImage;
+  DocumentSnapshot? snapshot;
+
 
   UsersModel({
     required this.id,

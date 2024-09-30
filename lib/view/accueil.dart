@@ -23,7 +23,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset("assets/icons/LOGO.svg"),
+            SvgPicture.asset("assets/icons/logop.svg"),
             // Image.asset('assets/images/logo.jpg'), // Logo Ikaso
             const SizedBox(height: 20),
             const Text(
