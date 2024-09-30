@@ -50,10 +50,11 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 50),
-                SvgPicture.asset(
-                  "assets/icons/logop.svg",
-                  height: 100,
-                ),
+                // SvgPicture.asset(
+                //   "assets/images/ikaso.png",
+                //   height: 100,
+                // ),
+                Image.asset('assets/images/ikaso.png',height: 80,),
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _emailController,

@@ -12,6 +12,8 @@ class UserViewModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  
+  BuildContext? get context => null;
 
   Future<void> signUp(
     String email,
@@ -54,7 +56,12 @@ class UserViewModel {
 
       // Update AppConstants
       AppConstants.currentUser = newUser;
-      Get.to(AccountScreen());
+      // Get.to(AccountScreen());
+       Navigator.push(
+        context!,
+        MaterialPageRoute(builder: (context) => const AccountScreen()),
+      );
+
       Get.snackbar("Information", "Votre compte a été créé");
     } catch (e) {
       Get.snackbar("Erreur", e.toString());
@@ -146,17 +153,28 @@ class UserViewModel {
     AppConstants.currentUser.isHost = userData["isHost"] ?? false;
   }
 
-  getImageFromStorage(userID) async {
-    if (AppConstants.currentUser.displayImage != null) {
-      return AppConstants.currentUser.displayImage;
-    }
-    final ImageDataBytes = await FirebaseStorage.instance
-        .ref()
-        .child("userImages")
-        .child("userID")
-        .child(userID + ".png")
-        .getData(1024 * 1024);
-    AppConstants.currentUser.displayImage = MemoryImage(ImageDataBytes!);
+  Future<ImageProvider?> getImageFromStorage(String userID) async {
+  // Vérifie si l'image d'affichage de l'utilisateur est déjà disponible
+  if (AppConstants.currentUser.displayImage != null) {
     return AppConstants.currentUser.displayImage;
   }
+
+  try {
+    // Récupère les données de l'image depuis Firebase Storage
+    final imageDataBytes = await FirebaseStorage.instance
+        .ref()
+        .child("userImages")
+        .child(userID)
+        .child("$userID.png")
+        .getData(1024 * 1024);
+
+    // Stocke l'image en mémoire
+    AppConstants.currentUser.displayImage = MemoryImage(imageDataBytes!);
+    return AppConstants.currentUser.displayImage;
+  } catch (e) {
+    // Gère les erreurs éventuelles
+    print("Error fetching image: $e");
+    return null;
+  }
+}
 }

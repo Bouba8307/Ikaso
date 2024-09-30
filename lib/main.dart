@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('images/logo.jpg'),
+            Image.asset('assets/images/ikaso.png'),
             const SizedBox(height: 3),
             ElevatedButton(
               onPressed: () {

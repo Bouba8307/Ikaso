@@ -71,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20.0),
           children: [
-            SvgPicture.asset("assets/icons/logop.svg"),
+            // SvgPicture.asset("assets/images/ikaso.png"),
             const Text(
               "À propos de toi",
               style: TextStyle(
